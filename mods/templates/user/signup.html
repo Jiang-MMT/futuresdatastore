@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+{% import 'macros.html' as m %}
+{% extends 'layout.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="vcenter">
+        <div class="row col-sm-6 col-sm-offset-3">
+        <h2 class="form-signin-heading">Sign up</h2>
+        {% call m.render_form(form, action_url=url_for('user.signup'), action_text='Sign Up', btn_class="btn btn-primary", class_='login-form') %}
+        {{ m.render_field(form.email, label_visible=false, placeholder='Email', type='email') }}
+        {{ m.render_field(form.password, label_visible=false, placeholder='Password', type='password') }}
+        {% endcall %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

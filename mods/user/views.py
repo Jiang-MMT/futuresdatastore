@@ -1,0 +1,197 @@
+import os
+from flask import Blueprint, current_app, abort, flash, url_for, render_template, redirect
+from flask import Markup, request
+from flask_login import current_user, login_required, login_user, logout_user, user_logged_in
+from sqlalchemy.exc import IntegrityError
+from datetime import datetime
+from util import gen_confirmation_token, confirm_token
+from models import User
+from forms import signupForm, signinForm, resetForm, forgotForm, changepwdForm, resendForm
+from ..extensions import db
+from .._celery import create_celery
+
+
+user_bp = Blueprint('user', __name__, url_prefix='/user')
+
+
+@user_bp.route('/signup', methods=['GET', 'POST'])
+def signup():
+    celery = create_celery(current_app)
+    form = signupForm()
+    if form.validate_on_submit():
+        try:
+            user = User(form.email.data, form.password.data)
+            db.session.add(user)
+            db.session.commit()
+            token = gen_confirmation_token(user.email)
+            confirm_url = url_for('user.confirm_email',
+                                  token=token, _external=True)
+            html = render_template('user/email/activate.html',
+                                   confirm_url=confirm_url)
+            sub = "From FuturesDataStore - activate your account"
+            celery.send_task('tasks.send_mail', args=(sub, user.email, html))
+            flash('Check your inbox to activate your account.', 'success')
+            return redirect(url_for('main.home'))
+        except IntegrityError:
+            db.session.rollback()
+            flash('ERROR! Email {} already exists.'.format(form.email.data),
+                  'error')
+    return render_template('user/signup.html', form=form,
+                           current_user=current_user, title='Sign Up')
+
+@user_bp.route('/change_role', methods=['GET', 'POST'])
+@login_required
+def change_role():
+    email = request.form.get('email')
+    if request.method == 'POST':
+        if email == os.environ['MAIL_USERNAME']:
+            user = User.query.filter_by(email=email).first()
+            user.role = 'admin'
+            db.session.add(user)
+            db.session.commit()
+            flash('user role changed!', 'success')
+            return redirect(url_for('admin.index'))
+        else:
+            flash ('failed to change role', 'danger')
+            return redirect(url_for('main.home'))
+    return render_template('user/change_role.html')
+
+
+@user_bp.route('/confirm/<token>', methods=['GET', 'POST'])
+def confirm_email(token):
+    try:
+        email = confirm_token(token)
+    except:
+        abort(404)
+    user = User.query.filter_by(email=email).first_or_404()
+    if user.confirmed:
+        flash('Account already confirmed. Please login.', 'danger')
+    else:
+        user.confirmed = True
+        user.confirmed_on = datetime.now()
+        db.session.add(user)
+        db.session.commit()
+        flash('You have confirmed your account.', 'success')
+    return redirect(url_for('user.profile'))
+
+
+@user_bp.route('/signin', methods=['GET', 'POST'])
+def signin():
+    form = signinForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            if user.confirmed:
+                if user.check_password(form.password.data):
+                    login_user(user, remember=False)
+                    user.last_logged_in = user.current_logged_in
+                    user.current_logged_in = datetime.now()
+                    db.session.commit()
+                    if user_logged_in:
+                        return redirect(request.args.get('next') or url_for('user.profile'))
+                    else:
+                        flash("Sorry, but you could not log in.")
+                        return redirect(request.url)
+                else:
+                    flash(Markup('Wrong password. <a href="/user/forgot" class="alert-link">Forgot</a> your password?'), 'danger')
+                    return redirect(request.url)
+            else:
+                flash(Markup('This user has not been activated yet. Need to <a href="/user/resend">Resend</a> activation email?'), 'danger')
+                return redirect(request.url)
+        else:
+            flash(Markup('This user does not exist. Want to <a href="/user/signup" class="alert-link">Sign up</a>?'), 'danger')
+            return redirect(request.url)
+
+    return render_template('user/signin.html', form=form,
+                           current_user=current_user)
+
+
+@user_bp.route('/forgot', methods=['GET', 'POST'])
+def forgot():
+    celery = create_celery(current_app)
+    form = forgotForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            user.confirmed = True
+            sub = 'Reset your password'
+            token = gen_confirmation_token(user.email)
+            confirm_url = url_for('user.reset', token=token, _external=True)
+            html = render_template('user/email/reset.html', confirm_url=confirm_url)
+            celery.send_task('tasks.send_mail', args=(sub, user.email, html))
+            flash('An email has been sent to your email box. Follow the instructions to reset your password.', 'success')
+            return redirect(url_for('user.signin'))
+    return render_template('user/forgot.html', form=form,  current_user=current_user, title='Forgot password')
+
+
+@user_bp.route('/reset/<token>', methods=['GET', 'POST'])
+@login_required
+def reset(token):
+    try:
+        email = confirm_token(token)
+    except:
+        abort(404)
+    form = resetForm()
+    user = User.query.filter_by(email=email).first()
+    if request.method == 'POST':
+        if user:
+            user.password = form.password.data
+            db.session.commit()
+            flash('Your password has been reset. Please sign in.', 'success')
+            return redirect(url_for('user.signin'))
+        else:
+            flash('Unknow email address.', 'danger')
+            return redirect(url_for('user.forgot'))
+    return render_template('user/reset_pwd.html',  form=form, token=token, current_user=current_user, title='Reset password')
+
+
+@user_bp.route('/resend', methods=['GET', 'POST'])
+@login_required
+def resend():
+    celery = create_celery(current_app)
+    form = resendForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            token = gen_confirmation_token(user.email)
+            confirm_url = url_for('user.confirm_email', token=token, _external=True)
+            html = render_template('user/email/resend.html', confirm_url=confirm_url)
+            sub = 'Project Chili - Activate your account!'
+            celery.send_task('tasks.send_mail', args=(sub, user.email, html))
+            flash('A new confirmation email has been sent.', 'success')
+        else:
+            flash('This email address has not been registered.')
+        return redirect(url_for('user.signin'))
+    return render_template('user/resend_confirmation.html', form=form, current_user=current_user, title='Resend confirmation')
+
+
+@user_bp.route('/profile')
+@login_required
+def profile():
+    return render_template('user/profile.html', current_user=current_user,  title='Profile')
+
+
+@user_bp.route('/changepwd', methods=['GET', 'POST'])
+@login_required
+def changepwd():
+    form = changepwdForm()
+    if request.method == 'POST':
+        user = User.query.filter_by(email=current_user.email).first()
+        if form.validate_on_submit():
+            if user.check_password(form.old_pwd.data):
+                user.password = form.new_pwd.data
+                db.session.commit()
+                flash('You have successfully changed your password.', 'success')
+                return redirect(url_for('user.profile'))
+            else:
+                flash('The old password does not match our record. Try again', 'danger')
+                return redirect(request.url)
+    return render_template('user/changepwd.html', form=form, current_user=current_user, title='Change password')
+
+
+@user_bp.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have successfully logged out.', 'success')
+    return redirect(url_for('main.home'))

@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+{% extends 'layout.html' %}
+{% block content %}
+<form class="form-group" method="post" action="{{ url_for('user.change_role') }}">
+<div class="row col-sm-8 col-sm-offset-2">
+  <input name="email" class="form-control" type="email" \>
+  <button name="submit" type="submit" class="btn btn-primary btn-default">Submit</button>
+</div>
+</form>
+{% endblock %}

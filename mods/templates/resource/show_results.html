@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+{% extends 'layout.html' %}
+{% block content %}
+<div style="margin-top:5%" class="container">
+    <div class="alert alert-success">We have thefollowing files for you. Choose the files you want and hit Download button.</div>
+    <form method="post" action="{{ url_for('resource.show_results') }}">
+        <div class="row col-sm-9" style="margin:auto;">
+            <input type="checkbox"class="form-check-input" name="check_all" id="check_all" type="button" \>
+            <button class="btn btn-success pull-right" type="submit" name="download">Download</button>
+        </div>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Select</th>
+            <th>Contract_Date</th>
+            <th>Filename</th>
+          </tr>
+        </thead>
+        {% for result in results %}
+        <tbody>
+            <tr>
+                <td><input type="checkbox" name="csv" value="{{ result.filename }}" \></td>
+                <td>{{ result.contract_date }}</td>
+                <td>{{ result.filename }}</td>
+            </tr>
+        </tbody>
+        {% endfor %}
+      </table>
+    </form>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+$.fn.checkboxMaster = function(list) {
+
+    return this.on('click', function() {
+        $(list).prop('checked', $(this).prop('checked'));
+    });
+
+}
+$('#check_all').checkboxMaster('input[name=csv]');
+</script>
+{% endblock %}

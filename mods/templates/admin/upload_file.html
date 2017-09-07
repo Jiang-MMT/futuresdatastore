@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+{% extends 'admin/master.html' %}
+{% block body %}
+<div class="container">
+    <div class="page-header">
+        <h2>Upload your files</h2>
+    </div>
+  <div class="form-inline form-control-file">
+      <!--<div class="col-sm-8 col-sm-offset-2">-->
+          <!--<form id="upload-files" action="{{ url_for('files.upload') }}"  method="post" enctype="multipart/form-data">-->
+            <!--<input class="filestyle" data-buttonText="Choose Files" data-buttonBefore="true" type="file" name="file" multiple />-->
+            <!--<button type="submit" class="btn btn-sm btn-primary" name="submit">OK</button>-->
+          <!--</form>-->
+      <!--</div>-->
+      <div class="col-sm-8 col-sm-offset-2">
+          <form id="upload-folder" action="{{ url_for('files.upload') }}"  method="post" enctype="multipart/form-data">
+              <input class="filestyle" data-buttonText="Choose Folder" data-buttonBefore="true" type="file" name="folder" multiple webkitdirectory directory />
+              <button type="submit" class="btn btn-sm btn-primary" name="submit">OK</button>
+          </form>
+      </div>
+  </div>
+</div>
+{% block tail %}
+    {{ super() }}
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap-filestyle.min.js') }}"></script>
+{% endblock %}
+{% endblock body %}
+

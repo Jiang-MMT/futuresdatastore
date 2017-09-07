@@ -1,0 +1,22 @@
+.DS_Store
+.flaskenv
+*.pyc
+.env
+*.pyo
+dist
+build
+*.log
+*.egg
+*.egg-info
+_mailinglist
+.tox
+.cache/
+.idea/
+
+# Coverage reports
+htmlcov
+.coverage
+.coverage.*
+*,cover
+.ropeproject
+dump.rdb

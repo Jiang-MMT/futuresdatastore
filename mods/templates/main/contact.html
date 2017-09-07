@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+{% extends 'layout.html' %}
+{% block content %}
+<div class="container">
+  <h3 class="text-center">Leave a message</h3>
+  <div class="row">
+    <div class="col-sm-5">
+      <h4>We can be reached by phone or email.</h4>
+      <p><span class="glyphicon glyphicon-map-marker"></span> Calgary, Alberta, Canada</p>
+      <p><span class="glyphicon glyphicon-phone"></span> +1 403 926 8027</p>
+      <p><span class="glyphicon glyphicon-envelope"></span> jiangmmt@gmail.com</p> 
+    </div>
+    <form action="{{ url_for('main.contact')}}" method="post">
+    <div class="col-sm-7">
+      <div class="row">
+        <div class="col-sm-6 form-group">
+          <input class="form-control" id="firstname" name="firstname" placeholder="First Name" type="text" required>
+        </div>
+        <div class="col-sm-6 form-group">
+            <input class="form-control" id="lastname" name="lastname" placeholder="Last Name" type="text" required>
+        </div>
+      </div>
+      <div class="row">
+          <div class="col-sm-6 form-group">
+              <input class="form-control" id="email" name="email" placeholder="email" type="email" required>
+          </div>
+          <div class="col-sm-6 form-group">
+              <input class="form-control" id="phone" name="phone" placeholder="Phone" type="tel" required>
+          </div>
+      </div>
+      <input style="margin-bottom: 10px;" class="form-control" id="subject" name="subject" placeholder="Subject" />
+      <textarea class="form-control" id="content" name="content" placeholder="Comment" rows="5"></textarea><br>
+      <div class="row">
+        <div class="col-sm-12 form-group">
+          <button class="btn btn-primary pull-right" type="submit">Send</button>
+        </div>
+      </div>
+    </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

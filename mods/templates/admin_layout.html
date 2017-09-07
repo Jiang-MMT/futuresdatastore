@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+{% import 'admin/layout.html' as layout with context -%}
+{% extends 'admin/base.html' %}
+{% block head_css %}
+{{ super() }}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" />
+{% endblock head_css %}
+{% block access_control %}
+<a class="btn pull-right" href="{{ url_for('main.home') }}"><span class="glyphicon glyphicon-log-out"></span> Go Home</a>
+{% endblock %}

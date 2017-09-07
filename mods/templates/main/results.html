@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+{% extends 'layout.html' %}
+{% block content %}
+<div style="margin-top:5%" class="container">
+    {% if results %}
+    <div class="alert alert-success">Here is what we've found. Click texts below to narrow down the results.</div>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Description</th>
+            <th>Exchange</th>
+            <th>Category</th>
+            <th>Download</th>
+          </tr>
+        </thead>
+        {% for result in results %}
+        <tbody>
+            <tr>
+                <td><a href="{{ url_for('main.filter_results', query=query, symbol=result.symbol) }}">{{ result.symbol }}</a></td>
+                <td>{{ result.description }}</td>
+                <td><a href="{{ url_for('main.filter_results', query=query, exchange=result.exchange) }}">{{ result.exchange }}</a></td>
+                <td><a href="{{ url_for('main.filter_results', query=query, category=result.category) }}">{{ result.category }}</a></td>
+                {% if result.downloadable %}
+                <td><a href="{{ url_for('resource.download_query', symbol=result.symbol) }}"><i class="glyphicon glyphicon-download-alt"></i></a></td>
+                {% endif %}
+            </tr>
+        </tbody>
+        {% endfor %}
+      </table>
+    {% else %}
+    <div class="alert alert-danger">We couldn't find anything. Click
+        <a href="#modalSearch" data-toggle="modal" data-target="#modalSearch"> Here </a> to try again.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

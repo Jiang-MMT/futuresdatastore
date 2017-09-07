@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+{% import 'macros.html' as m %}
+{% extends 'layout.html' %}
+{% block content %}
+<div clas="container">
+  <div class="row col-sm-6 col-sm-offset-3 vcenter">
+      <h2 class="form-signin-heading">Reset password</h2>
+      {% call m.render_form(form, action_url=url_for('user.changepwd'), action_text='Reset', btn_class="btn btn-primary", class_='login-form') %}
+      {{ m.render_field(form.old_pwd, label_visible=false, placeholder='Old password', type='password') }}
+      {{ m.render_field(form.new_pwd, label_visible=false, placeholder='New password', type='password') }}
+      {% endcall %}
+  </div>
+</div>
+{% endblock content %}

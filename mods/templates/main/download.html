@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+{% import 'macros.html' as m %}
+{% extends 'layout.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="container" style="margin-top:5%;">
+    <div class="row col-sm-6 col-sm-offset-3">
+        <div class="vcenter">
+            <h2>Please fill in the below form</h2>
+            {% call m.render_form(form, action_url=url_for('resource.download_query'), action_text='OK', btn_class="btn btn-primary") %}
+            {{ m.render_field(form.symbol, label_visible=True, placeholder=request.args.get('symbol'), type='text') }}
+            {{ m.render_field(form.contract_from, label_visible=True, type='date') }}
+            {{ m.render_field(form.contract_to, label_visible=True, type='date') }}
+            {% endcall %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

@@ -1,0 +1,36 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+<div class="jumbotron">
+    <h2>ADMIN PANEL</h2>
+    <p>
+        The tools below aim to make your job as an administrator easier. Manage users and files, run scripts, and more...
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+            <h2>Manage your users</h2>
+            <p class="lead">Perform CRUD operations on the records of your users database.</p>
+            <a class="btn btn-primary" role="button" href="{{ url_for('manage_user.index_view') }}"><i class="fa fa-chevron-right"></i> Manage users</a>
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+            <h2>Manage your files</h2>
+            <p class="lead">Upload folders and files, and make them downloadable to your users.</p>
+            <a class="btn btn-primary" role="button" href="{{ url_for('files.upload') }}"><i class="fa fa-chevron-right"></i> Manage files</a>
+            <hr>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+            <h2>Load csv files into database</h2>
+            <p class="lead">Create database from csv - on the fly!</p>
+            <a class="btn btn-primary" role="button" href="{{ url_for('files.upload_csv') }}"><i class="fa fa-chevron-right"></i> Create database</a>
+            <hr>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+{% extends 'layout.html' %}
+{% block content %}
+<div class="container">
+    <div class="user-profile">
+      <div class="page-header">
+        <h2>User Profile</h2>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+           <div class="panel panel-primary">
+             <div class="panel-heading">Email Address</div>
+             <div class="panel-body">{{ current_user.email }}</div>
+           </div>
+           <div class="panel panel-info">
+               <div class="panel-heading">Account Actions</div>
+               <div class="panel-body"><a href="{{ url_for('user.changepwd') }}">Change Password</a></div>
+           </div>
+           <div class="panel panel-info">
+               <div class="panel-heading">Statistics</div>
+               <div class="panel-body">Member since: {{ current_user.confirmed_on.strftime("%A %B %d, %Y") }}</div>
+               {% if current_user.last_logged_in != None %}
+                 <div class="panel-body">Last Logged In: {{ current_user.last_logged_in.strftime("%A %B %d, %Y") }}</div>
+               {% else %}
+                 <div class="panel-body">First time logged in. Welcome!</div>
+               {% endif %}
+           </div>
+           <div class="panel panel-info">
+               <div class="panel-heading">TO DO</div>
+               {% if current_user.role == 'admin' %}
+               <div class="panel-body"><a href="{{ url_for('admin.index') }}">Go to Admin page</a></div>
+               {% endif %}
+               <div class="panel-body"><a href="{{ url_for('resource.download_query') }}">Search datasets</a></div>
+           </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
