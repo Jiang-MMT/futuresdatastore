@@ -1,3 +1,4 @@
+import os
 from mods._celery import create_celery
 from mods import app
 from flask_mail import Message
@@ -21,9 +22,9 @@ def send_mail(subject, recipients, html):
 
 @celery.task
 def upload_to_s3(filename, file_content):
-    s3.put_object(Bucket=app.config['UPLOAD_BUCKET'], Key=filename, Body=file_content)
+    s3.put_object(Bucket=os.environ.get('S3_BUCKET_NAME'), Key=filename, Body=file_content)
     url = '{}/{}/{}'.format(s3.meta.endpoint_url,
-                            app.config['UPLOAD_BUCKET'],
+                            os.environ.get('S3_BUCKET_NAME'),
                             filename)
     symbol, contract_date = _parse_contract_date(filename)
     db.session.add(File(filename=filename,
@@ -34,6 +35,6 @@ def upload_to_s3(filename, file_content):
 
 @celery.task
 def download_from_s3(q):
-    return s3.get_object(Bucket=app.config['UPLOAD_BUCKET'],
+    return s3.get_object(Bucket=os.environ.get('S3_BUCKET_NAME'),
                          Range='bytes={}-{}'.format(67, ''),
                          Key=q)['Body'].read().lstrip()

@@ -26,5 +26,5 @@ CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
 ACCEPT_CONTENT = ['json']
 CELERY_IMPORTS = ('tasks')
 # S3
-UPLOAD_BUCKET = os.environ.get('UPLOAD_BUCKET')
+S3_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME')
 SYMBOL_BUCKET = os.environ.get('SYMBOL_BUCKET')
