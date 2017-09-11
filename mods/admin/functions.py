@@ -9,6 +9,7 @@ month_codes_dict = dict(zip(list('FGHJKMNQUVXZ'), range(1, 13)))
 
 def _parse_contract_date(filename):
     keys = filename.split('.')[0].split('_')[-1]
+    short_name = filename.split('_')[-1]
     symbol = keys[:2]
     year_str = str(keys[-2:])
     month_str = str(month_codes_dict[keys[-3]])
@@ -16,7 +17,7 @@ def _parse_contract_date(filename):
     contract_date = datetime.strptime(contract_date_str, '%y-%m-%d')
     if contract_date.year > 2030:
         contract_date = contract_date.replace(year=contract_date.year-100)
-    return symbol, contract_date
+    return symbol, short_name, contract_date
 
 
 def _load_csv_to_db(f, db, model):

@@ -1,13 +1,15 @@
+import os
 import contextlib
 from StringIO import StringIO
 from datetime import datetime
 from flask import(Blueprint, render_template, request,
                   url_for, current_app, Response, abort, flash, redirect)
 from flask_login import current_user, login_required
-from mods.app import app
+# from mods.app import app
 from ..admin.models import File
 from forms import DownloadForm
-from .._celery import create_celery
+from ..admin.functions import _init_s3
+# from .._celery import create_celery
 
 
 resource_bp = Blueprint('resource', __name__, url_prefix='/resource')
@@ -58,13 +60,20 @@ def show_results():
 @resource_bp.route('/download_csv')
 @login_required
 def download_csv():
-    celery = create_celery(current_app)
+    s3 = _init_s3()
+    # celery = create_celery(current_app)
     query = request.args.getlist('query')
     if query:
         with contextlib.closing(StringIO()) as b:
             b.write('symbol,timestamp,tradingDay,open,high,low,close,volume,openInterest\n')
             for q in query:
-                data = celery.send_task('tasks.download_from_s3', args=(q))
+                directory = q.split('_')[0]
+                obj_name = q.split('_')[1]
+                k = '{}/{}'.format(directory, obj_name)
+                data = s3.get_object(Bucket=os.environ.get('S3_BUCKET_NAME'),
+                                     Range='bytes={}-{}'.format(67, ''),
+                                     Key=k)['Body'].read().lstrip()
+                # data = celery.send_task('tasks.download_from_s3', args=(q))
                 b.write(data)
             return Response(b.getvalue(),
                             mimetype='text/csv',
