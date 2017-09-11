@@ -42,24 +42,21 @@ def download_from_s3(q):
 
 
 @celery.task
-def write_filetable(files):
-    for f in files:
-        filename = secure_filename(f.filename)[2:]
-        symbol, short_name, contract_date = _parse_contract_date(filename)
-        url = 'https://s3.amazonaws.com/{}/downloads2/{}/{}'.format(
-               os.environ.get('S3_BUCKET_NAME'), symbol, short_name)
-        db.session.add(File(filename=filename,
-                        path=url,
-                        symbol=symbol,
-                        contract_date=contract_date))
-    db.session.commit()
-
-
-
-# def write_filetable(filename, url, symbol, contract_date):
-    # db.session.add(File(filename=filename,
-                   # path=url,
-                   # symbol=symbol,
-                   # contract_date=contract_date))
+# def write_filetable(files):
+    # for f in files:
+        # filename = secure_filename(f.filename)[2:]
+        # symbol, short_name, contract_date = _parse_contract_date(filename)
+        # url = 'https://s3.amazonaws.com/{}/downloads2/{}/{}'.format(
+               # os.environ.get('S3_BUCKET_NAME'), symbol, short_name)
+        # db.session.add(File(filename=filename,
+                        # path=url,
+                        # symbol=symbol,
+                        # contract_date=contract_date))
     # db.session.commit()
+def write_filetable(filename, url, symbol, contract_date):
+    db.session.add(File(filename=filename,
+                   path=url,
+                   symbol=symbol,
+                   contract_date=contract_date))
+    db.session.commit()
 

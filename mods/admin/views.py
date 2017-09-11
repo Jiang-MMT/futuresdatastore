@@ -28,7 +28,7 @@ class FileUploadView(BaseView):
 
     @expose('/', methods=('GET', 'POST'))
     def upload(self):
-        # celery = create_celery(current_app)
+        celery = create_celery(current_app)
         if request.method == 'POST':
             if 'folder' in request.files:
                 files = request.files.getlist('folder')
@@ -38,13 +38,11 @@ class FileUploadView(BaseView):
                     symbol, short_name, contract_date = _parse_contract_date(filename)
                     url = 'https://s3.amazonaws.com/{}/downloads2/{}/{}'.format(
                         os.environ.get('S3_BUCKET_NAME'), symbol, short_name)
-                    db.session.add(File(filename=filename,
-                                   path=url,
-                                   symbol=symbol,
-                                   contract_date=contract_date))
-                    # # # file_content = f.read()
-                # celery.send_task('tasks.write_filetable', args=(files))
-                db.session.commit()
+                    # db.session.add(File(filename=filename,
+                                   # path=url,
+                                   # symbol=symbol,
+                                   # contract_date=contract_date))
+                celery.send_task('tasks.write_filetable', args=(filename, url, sumbol, contract_date))
                 flash("Your files have been successfully uploaded!", "success")
                 return redirect(request.url)
             return redirect(request.url)
