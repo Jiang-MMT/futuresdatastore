@@ -41,7 +41,6 @@ def download_from_s3(q):
                          Key=q)['Body'].read().lstrip()
 
 
-@celery.task
 # def write_filetable(files):
     # for f in files:
         # filename = secure_filename(f.filename)[2:]
@@ -53,6 +52,7 @@ def download_from_s3(q):
                         # symbol=symbol,
                         # contract_date=contract_date))
     # db.session.commit()
+@celery.task
 def write_filetable(filename, url, symbol, contract_date):
     db.session.add(File(filename=filename,
                    path=url,

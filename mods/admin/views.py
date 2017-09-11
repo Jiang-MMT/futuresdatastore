@@ -42,7 +42,7 @@ class FileUploadView(BaseView):
                                    # path=url,
                                    # symbol=symbol,
                                    # contract_date=contract_date))
-                celery.send_task('tasks.write_filetable', args=(filename, url, sumbol, contract_date))
+                celery.send_task('tasks.write_filetable', args=(filename, url, symbol, contract_date))
                 flash("Your files have been successfully uploaded!", "success")
                 return redirect(request.url)
             return redirect(request.url)
