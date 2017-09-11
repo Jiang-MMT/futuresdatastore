@@ -38,3 +38,13 @@ def download_from_s3(q):
     return s3.get_object(Bucket=os.environ.get('S3_BUCKET_NAME'),
                          Range='bytes={}-{}'.format(67, ''),
                          Key=q)['Body'].read().lstrip()
+
+
+@celery.task
+def write_filetable(filename, url, symbol, contract_date):
+    db.session.add(File(filename=filename,
+                   path=url,
+                   symbol=symbol,
+                   contract_date=contract_date))
+    db.session.commit()
+
