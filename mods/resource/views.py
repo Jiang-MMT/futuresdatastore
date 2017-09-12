@@ -3,7 +3,7 @@ import contextlib
 from StringIO import StringIO
 from datetime import datetime
 from flask import(Blueprint, render_template, request,
-                  url_for, current_app, Response, abort, flash, redirect)
+                  url_for, current_app, Response, flash, redirect)
 from flask_login import current_user, login_required
 # from mods.app import app
 from ..admin.models import File
@@ -68,15 +68,16 @@ def download_csv():
             b.write('symbol,timestamp,tradingDay,open,high,low,close,volume,openInterest\n')
             for q in query:
                 directory = q.split('_')[0]
-                obj_name = q.split('_')[1]
-                k = '{}/{}'.format(directory, obj_name)
+                obj_name = q.split('_')[-1]
+                k = 'downloads2/{}/{}'.format(directory, obj_name)
                 data = s3.get_object(Bucket=os.environ.get('S3_BUCKET_NAME'),
                                      Range='bytes={}-{}'.format(67, ''),
                                      Key=k)['Body'].read().lstrip()
-                # data = celery.send_task('tasks.download_from_s3', args=(q))
                 b.write(data)
+            flash('The requested files have been successfully download!', 'success')
             return Response(b.getvalue(),
                             mimetype='text/csv',
                             headers={"Content-Disposition": "attachment;filename={}.csv".format(datetime.utcnow())})
     else:
-        return abort(404)
+        flash('Please select file(s)', 'danger')
+        return redirect(url_for('resource.show_results'))
