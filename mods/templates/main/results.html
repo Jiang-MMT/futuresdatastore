@@ -3,7 +3,6 @@
 {% block content %}
 <div style="margin-top:5%" class="container">
     {% if results %}
-    <div class="alert alert-success">Here is what we've found. Click texts below to narrow down the results.</div>
       <table class="table table-hover">
         <thead>
           <tr>
@@ -29,8 +28,11 @@
         {% endfor %}
       </table>
     {% else %}
-    <div class="alert alert-danger">We couldn't find anything. Click
-        <a href="#modalSearch" data-toggle="modal" data-target="#modalSearch"> Here </a> to try again.
+    <div class="row text-center">
+        <h4>Click 
+        <a href="#modalSearch" data-toggle="modal" data-target="#modalSearch"><i class="fa fa-search fa-2x" aria-hidden="true"></i></a>
+        to start a new search
+        </h4>
     </div>
     {% endif %}
 </div>

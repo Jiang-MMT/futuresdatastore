@@ -61,6 +61,10 @@ def search():
 def search_result():
     query = request.args.get('query')
     results = Symbol.query.search(query).all()
+    if results:
+        flash('Here are the docs that we found.', 'success')
+    else:
+        flash('Nothing found. Please try other words.', 'danger')
     return render_template('main/results.html', query=query,
                            current_user=current_user,
                            title='results', results=results)
