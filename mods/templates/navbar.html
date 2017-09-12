@@ -7,15 +7,15 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
      </button>
-       <a class="navbar-brand" style="font-weight: bold;" href="#">
+     <a class="navbar-brand" style="font-weight: bold;" href="{{ url_for('main.home') }}">
          <span style="color: #ff0000;">Futures</span><span style="color: #008000;">DataStore</span>
        </a>
      </div>
      <div class="collapse navbar-collapse" id="myNavbar">
          <ul class="nav navbar-nav">
-           <li><a href="{{ url_for('main.home') }}">Home</a></li>
-           <li><a href="{{ url_for('main.about') }}">About</a></li>
-           <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
+           <li><a href="{{ url_for('main.home') }}"><i class="fa fa-home" aria-hidden="true"></i> Home</a></li>
+           <li><a href="{{ url_for('main.about') }}"><i class="fa fa-info" aria-hidden="true"></i> About</a></li>
+           <li><a href="{{ url_for('main.contact') }}"><i class="fa fa-envelope" aria-hidden="true"></i> Contact</a></li>
            <li>
              <a href="#modalSearch" data-toggle="modal" data-target="#modalSearch">
                  <span id="searchGlyph" class="glyphicon glyphicon-search"></span><span class="hidden-sm hidden-md hidden-lg">Search</span>
@@ -28,7 +28,7 @@
            <li><a href="{{ url_for('user.logout') }}"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>
            {% else %}
            <li><a href="{{ url_for('user.signin') }}"><span class="glyphicon glyphicon-log-in"></span> Log in</a></li>
-           <li><a href="{{ url_for('user.signup') }}">Sign up</a></li>
+           <li><a href="{{ url_for('user.signup') }}"><i class="fa fa-user-plus" aria-hidden="true"></i> Sign up</a></li>
            {% endif %}
          </ul>
      </div>

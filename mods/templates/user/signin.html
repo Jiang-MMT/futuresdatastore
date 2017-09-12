@@ -4,13 +4,20 @@
 {% block title %}{{ title }}{% endblock %}
 {% block content %}
 <div class="container">
-    <div class="vcenter">
+    <div>
         <div class="row col-sm-6 col-sm-offset-3">
         <h2 class="form-signin-heading">Sign In</h2>
         {% call m.render_form(form, action_url=url_for('user.signin', next=request.args.get("next")), action_text='Sign In', btn_class="btn btn-primary", class_='login-form') %}
         {{ m.render_field(form.email, label_visible=false, placeholder='Email', type='email') }}
         {{ m.render_field(form.password, label_visible=false, placeholder='Password', type='password') }}
         {% endcall %}
+        <hr>
+        <div class="row">
+            <p>New User? Click 
+            <a href="{{ url_for('user.signup') }}">
+                <i class="fa fa-user-plus fa-2x" aria-hidden="true"></i>
+            </a> to sign up.</p>
+        </div>
         </div>
     </div>
 </div>
