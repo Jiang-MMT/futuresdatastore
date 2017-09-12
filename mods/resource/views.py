@@ -74,7 +74,6 @@ def download_csv():
                                      Range='bytes={}-{}'.format(67, ''),
                                      Key=k)['Body'].read().lstrip()
                 b.write(data)
-            flash('The requested files have been successfully download!', 'success')
             return Response(b.getvalue(),
                             mimetype='text/csv',
                             headers={"Content-Disposition": "attachment;filename={}.csv".format(datetime.utcnow())})
