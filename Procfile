@@ -1,2 +1,5 @@
 web: gunicorn run:app
 worker: celery worker -A celery_worker.celery -l INFO
+init: python manage.py db init
+migrate: python manage.py db migrate
+upgrade: python manage.py db upgrade
