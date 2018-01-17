@@ -6,11 +6,13 @@ from mods.app import app
 from flask_admin.contrib.sqla import ModelView
 from werkzeug.utils import secure_filename
 from mods.extensions import db
-from functions import _load_csv_to_db, _parse_contract_date
+from functions import _load_csv_to_db, _parse_contract_date, _init_s3
 from ..user.models import User
 from models import Symbol, File
 from .._celery import create_celery
 
+
+s3 = _init_s3()
 
 class FileUploadView(BaseView):
     def is_accessible(self):
@@ -36,6 +38,7 @@ class FileUploadView(BaseView):
                 for f in files:
                     filename = secure_filename(f.filename)[3:]
                     symbol, short_name, contract_date = _parse_contract_date(filename)
+                    s3.put_object(Bucket=os.environ.get('S3_BUCKET_NAME'), Key='downloads2/{}/{}'.format(symbol, f.filename, Body=f.content))
                     url = 'https://s3.amazonaws.com/{}/downloads2/{}/{}'.format(
                         os.environ.get('S3_BUCKET_NAME'), symbol, short_name)
                     db.session.add(File(filename=filename,
