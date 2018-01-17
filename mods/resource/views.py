@@ -72,6 +72,7 @@ def download_csv():
                 # directory = q.split('_')[0]
                 # obj_name = q.split('_')[-1]
                 k = 'downloads2/{}/{}'.format(directory, obj_name)
+                print k
                 data = s3.get_object(Bucket=os.environ.get('S3_BUCKET_NAME'),
                                      Range='bytes={}-{}'.format(67, ''),
                                      Key=k)['Body'].read().lstrip()
