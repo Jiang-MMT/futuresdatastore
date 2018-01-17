@@ -34,7 +34,7 @@ class FileUploadView(BaseView):
                 files = request.files.getlist('folder')
 
                 for f in files:
-                    filename = secure_filename(f.filename)[2:]
+                    filename = secure_filename(f.filename)[3:]
                     symbol, short_name, contract_date = _parse_contract_date(filename)
                     url = 'https://s3.amazonaws.com/{}/downloads2/{}/{}'.format(
                         os.environ.get('S3_BUCKET_NAME'), symbol, short_name)
