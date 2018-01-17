@@ -38,7 +38,7 @@ class FileUploadView(BaseView):
                 for f in files:
                     filename = secure_filename(f.filename)[3:]
                     symbol, short_name, contract_date = _parse_contract_date(filename)
-                    s3.put_object(Bucket=os.environ.get('S3_BUCKET_NAME'), Key='downloads2/{}/{}'.format(symbol, f.filename), Body=f)
+                    s3.put_object(Bucket=os.environ.get('S3_BUCKET_NAME'), Key='downloads2/{}'.format(f.filename), Body=f)
                     url = 'https://s3.amazonaws.com/{}/downloads2/{}/{}'.format(
                         os.environ.get('S3_BUCKET_NAME'), symbol, short_name)
                     db.session.add(File(filename=filename,
