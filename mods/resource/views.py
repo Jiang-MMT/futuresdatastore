@@ -67,12 +67,11 @@ def download_csv():
         with contextlib.closing(StringIO()) as b:
             b.write('symbol,timestamp,tradingDay,open,high,low,close,volume,openInterest\n')
             for q in query:
-                directory = q[:1]
+                directory = q[:2]
                 obj_name = q
                 # directory = q.split('_')[0]
                 # obj_name = q.split('_')[-1]
                 k = 'downloads2/{}/{}'.format(directory, obj_name)
-                print k
                 data = s3.get_object(Bucket=os.environ.get('S3_BUCKET_NAME'),
                                      Range='bytes={}-{}'.format(67, ''),
                                      Key=k)['Body'].read().lstrip()
